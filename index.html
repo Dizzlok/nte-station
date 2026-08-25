@@ -4,17 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="./">
     <title>Кафе "Ориген" - Главная</title>
 
+    <!-- ДИНАМИЧЕСКИЙ BASE + ЗАЩИТА ОТ 404 -->
     <script>
         (function () {
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
+            let basePath = '/';
+
+            // 1. Определение окружения
+            if (hostname.includes('github.io')) {
+                const match = pathname.match(/^\/([^\/]+)\//);
+                basePath = match ? '/' + match[1] + '/' : '/';
+            } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                basePath = '/';
+            } else if (window.location.protocol === 'file:') {
+                basePath = './';
+            }
+
+            // 2. Установка тега <base>
+            let baseTag = document.querySelector('base');
+            if (!baseTag) {
+                baseTag = document.createElement('base');
+                document.head.insertBefore(baseTag, document.head.firstChild);
+            }
+            baseTag.href = basePath;
+
+            // 3. Оригинальная инициализация состояния (сохранена)
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
             const currentLang = localStorage.getItem('lang') || 'ru';
             document.documentElement.setAttribute('data-current-lang', currentLang);
+
+            // 4. Авто-исправление абсолютных путей (спасает от 404 на GitHub Pages)
+            document.querySelectorAll('link[href^="/"], script[src^="/"], img[src^="/"], a[href^="/"], source[srcset^="/"]').forEach(el => {
+                const attr = el.hasAttribute('href') ? 'href' : (el.hasAttribute('src') ? 'src' : 'srcset');
+                const originalValue = el.getAttribute(attr);
+                if (originalValue && !originalValue.startsWith('http://') && !originalValue.startsWith('https://') && !originalValue.startsWith('data:')) {
+                    el.setAttribute(attr, basePath + originalValue.substring(1));
+                }
+            });
         })();
     </script>
 
@@ -92,12 +124,10 @@
             const lang = localStorage.getItem('lang') || 'ru';
             document.documentElement.setAttribute('data-current-lang', lang);
 
-            // Обновляем активную кнопку языка
             document.querySelectorAll('.lang-btn').forEach(function (btn) {
                 btn.classList.toggle('active', btn.dataset.lang === lang);
             });
 
-            // Переводим все элементы с data-ui
             if (window.t) {
                 document.querySelectorAll('[data-ui]').forEach(el => {
                     const key = el.getAttribute('data-ui');
@@ -108,7 +138,6 @@
                 });
             }
 
-            // Перерендериваем сайдбар
             if (window.renderSidebar) {
                 window.renderSidebar();
             }
@@ -116,7 +145,6 @@
 
         applyTranslationsManual();
 
-        // Обработчик переключения языка
         document.querySelectorAll('.lang-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 localStorage.setItem('lang', btn.dataset.lang);

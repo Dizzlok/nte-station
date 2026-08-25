@@ -4,24 +4,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="../">
     <title>Кафе "Ориген" - Оптимизатор</title>
 
+    <!-- ДИНАМИЧЕСКИЙ BASE + ЗАЩИТА ОТ 404 -->
     <script>
         (function () {
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
+            let basePath = '/';
+
+            // 1. Определение окружения
+            if (hostname.includes('github.io')) {
+                const match = pathname.match(/^\/([^\/]+)\//);
+                basePath = match ? '/' + match[1] + '/' : '/';
+            } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                basePath = '/';
+            } else if (window.location.protocol === 'file:') {
+                basePath = './';
+            }
+
+            // 2. Установка тега <base>
+            let baseTag = document.querySelector('base');
+            if (!baseTag) {
+                baseTag = document.createElement('base');
+                document.head.insertBefore(baseTag, document.head.firstChild);
+            }
+            baseTag.href = basePath;
+
+            // 3. Оригинальная инициализация состояния (сохранена)
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
             const currentLang = localStorage.getItem('lang') || 'ru';
             document.documentElement.setAttribute('data-current-lang', currentLang);
+
+            // 4. Авто-исправление абсолютных путей (спасает от 404 на GitHub Pages)
+            document.querySelectorAll('link[href^="/"], script[src^="/"], img[src^="/"], a[href^="/"], source[srcset^="/"]').forEach(el => {
+                const attr = el.hasAttribute('href') ? 'href' : (el.hasAttribute('src') ? 'src' : 'srcset');
+                const originalValue = el.getAttribute(attr);
+                if (originalValue && !originalValue.startsWith('http://') && !originalValue.startsWith('https://') && !originalValue.startsWith('data:')) {
+                    el.setAttribute(attr, basePath + originalValue.substring(1));
+                }
+            });
         })();
     </script>
 
-    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="./assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="./assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="./assets/favicon/site.webmanifest">
 
     <link rel="stylesheet" href="./css/variables.css">
     <link rel="stylesheet" href="./css/base.css">
@@ -187,11 +219,11 @@
         </div>
     </div>
 
-    <script src="../js/common_database/character-data.js"></script>
-    <script src="../js/common/localization.js"></script>
-    <script src="../js/common/app.js" type="module"></script>
-    <script src="../js/common/sidebar-render.js"></script>
-    <script src="../js/common/sidebar.js"></script>
+    <script src="./js/common_database/character-data.js"></script>
+    <script src="./js/common/localization.js"></script>
+    <script src="./js/common/app.js" type="module"></script>
+    <script src="./js/common/sidebar-render.js"></script>
+    <script src="./js/common/sidebar.js"></script>
 
     <script>
         // Логика внутренних табов
@@ -216,40 +248,29 @@
         document.querySelectorAll('.lang-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 localStorage.setItem('lang', btn.dataset.lang);
-                // Обновляем активную кнопку
                 document.querySelectorAll('.lang-btn').forEach(function (b) {
                     b.classList.toggle('active', b.dataset.lang === btn.dataset.lang);
                 });
-                // Мгновенно переводим все тексты на странице
                 if (window.applyTranslations) {
                     window.applyTranslations();
                 }
-                // Перерисовываем сайдбар
                 if (window.renderSidebar) {
                     window.renderSidebar();
                 }
-                // Сообщаем app.js о смене языка (для блюд, персонажей, результатов)
                 window.dispatchEvent(new Event('langchange'));
             });
         });
 
-        // ВАЖНО: Применяем переводы ПОСЛЕ загрузки всех скриптов
+        // Применяем переводы ПОСЛЕ загрузки всех скриптов
         window.addEventListener('DOMContentLoaded', function () {
-            // Ждём немного, чтобы все скрипты успели загрузиться
             setTimeout(function () {
                 const currentLang = localStorage.getItem('lang') || 'ru';
-
-                // Подсвечиваем активную кнопку
                 document.querySelectorAll('.lang-btn').forEach(function (btn) {
                     btn.classList.toggle('active', btn.dataset.lang === currentLang);
                 });
-
-                // Применяем переводы ко всем элементам с data-ui
                 if (window.applyTranslations) {
                     window.applyTranslations();
                 }
-
-                // Перерисовываем сайдбар
                 if (window.renderSidebar) {
                     window.renderSidebar();
                 }
