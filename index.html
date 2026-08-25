@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="./">
+    <title>Кафе "Ориген" - Главная</title>
+
+    <script>
+        (function () {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+            const currentLang = localStorage.getItem('lang') || 'ru';
+            document.documentElement.setAttribute('data-current-lang', currentLang);
+        })();
+    </script>
+
+    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="./assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="./assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="./assets/favicon/site.webmanifest">
+
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/main-content.css">
+    <link rel="stylesheet" href="./css/panels.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/ad-sidebar.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+    <div class="grain"></div>
+
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <img src="./assets/images/main/logo.webp" alt="Logo" class="logo-img">
+                <div class="logo-text">
+                    <div class="logo-title" data-ui="site_title">Кафе "Ориген"</div>
+                    <div class="logo-sub" data-ui="site_subtitle">ОПТИМИЗАТОР РОСТЕРА</div>
+                </div>
+            </div>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <button class="toggle-btn" id="toggleBtn">‹</button>
+
+    <div id="sidebar-root"></div>
+
+    <div class="main-wrapper" id="mainWrapper">
+        <div class="content-area">
+            <div class="panel full-panel"
+                style="text-align: center; padding: 4rem 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 1.5rem; color: var(--accent); font-weight: 800;"
+                    data-ui="welcome_title">Добро пожаловать в Кафе "Ориген"!</h1>
+                <p style="font-size: 1.1rem; color: var(--text2); line-height: 1.7; max-width: 600px; margin-bottom: 2rem;"
+                    data-ui="welcome_text">Это временная главная страница. Здесь скоро появится подробная информация о
+                    проекте.</p>
+                <a href="calculator/index.html" class="btn-run"
+                    style="width: auto; padding: 0.75rem 2rem; text-decoration: none; margin: 0;">
+                    <img src="./assets/images/calculator/calculate.svg" alt="" class="btn-run-icon">
+                    <span data-ui="btn_to_calculator">Перейти к Калькулятору</span>
+                </a>
+            </div>
+        </div>
+        <aside class="ad-sidebar">
+            <div class="ad-title" data-ui="ad_title">Реклама</div>
+            <div class="ad-placeholder">
+                <div class="ad-placeholder-icon">📢</div>
+                <div data-ui="ad_size">300 × 600</div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="./js/common/sidebar-render.js"></script>
+    <script src="./js/common/sidebar.js"></script>
+    <script src="./js/common/localization.js"></script>
+
+    <script>
+        // Применяем переводы при загрузке
+        function applyTranslationsManual() {
+            const lang = localStorage.getItem('lang') || 'ru';
+            document.documentElement.setAttribute('data-current-lang', lang);
+
+            // Обновляем активную кнопку языка
+            document.querySelectorAll('.lang-btn').forEach(function (btn) {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Переводим все элементы с data-ui
+            if (window.t) {
+                document.querySelectorAll('[data-ui]').forEach(el => {
+                    const key = el.getAttribute('data-ui');
+                    const translation = window.t(key);
+                    if (translation) {
+                        el.textContent = translation;
+                    }
+                });
+            }
+
+            // Перерендериваем сайдбар
+            if (window.renderSidebar) {
+                window.renderSidebar();
+            }
+        }
+
+        applyTranslationsManual();
+
+        // Обработчик переключения языка
+        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                localStorage.setItem('lang', btn.dataset.lang);
+                applyTranslationsManual();
+            });
+        });
+    </script>
+</body>
+
+</html>
