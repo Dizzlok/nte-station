@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
     <title>Кафе "Ориген" - Оптимизатор</title>
 
     <!-- ДИНАМИЧЕСКИЙ BASE ДЛЯ ПОДПАПКИ CALCULATOR -->
@@ -11,20 +12,19 @@
         (function () {
             const hostname = window.location.hostname;
             const pathname = window.location.pathname;
-            let basePath = './'; // По умолчанию для локального открытия файла (file://)
+            let basePath = '../';
 
+            // Для GitHub Pages: /nte-station/calculator/ → basePath = '/nte-station/calculator/'
             if (hostname.includes('github.io')) {
-                const match = pathname.match(/^\/([^\/]+)\//);
+                const match = pathname.match(/^\/([^\/]+)\/calculator\/?/);
                 if (match) {
-                    // Для GitHub Pages: /nte-station/calculator/
                     basePath = '/' + match[1] + '/calculator/';
                 }
             } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                // Для локального сервера разработки
                 basePath = '/calculator/';
             }
 
-            // Обновляем или создаем тег base
+            // Обновляем тег base
             let baseTag = document.querySelector('base');
             if (!baseTag) {
                 baseTag = document.createElement('base');
@@ -32,20 +32,20 @@
             }
             baseTag.href = basePath;
 
-            // Глобальная переменная и функция для JS
+            // Глобальная переменная для JS
             window.APP_BASE_PATH = basePath;
+
+            // Глобальная функция для путей - ИСПРАВЛЕНА для динамических ассетов
             window.getAssetPath = function (path) {
                 if (!path) return path;
-                if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('/')) {
-                    return path;
-                }
-                // Убираем только начальные './', но сохраняем '../' для выхода в корень из подпапки
-                const cleanPath = path.replace(/^\.\//, '');
-                // Браузер автоматически схлопнет путь вида /nte-station/calculator/../assets/ в /nte-station/assets/
-                return basePath + cleanPath;
+                if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
+                // Убираем начальные ./ или ../ чтобы избежать дублирования
+                const cleanPath = path.replace(/^(\.\/|\.\.\/)+/, '');
+                // Для динамических картинок из подпапки calculator добавляем ../ для выхода в корень
+                return '../' + cleanPath;
             };
 
-            // Сохраняем состояние интерфейса
+            // Сохраняем состояние
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
                 document.documentElement.classList.add('sidebar-collapsed');
@@ -55,12 +55,13 @@
         })();
     </script>
 
-    <!-- ГЛОБАЛЬНЫЕ РЕСУРСЫ (выход на уровень вверх через ../) -->
+    <!-- ГЛОБАЛЬНЫЕ РЕСУРСЫ (с выходом на уровень вверх через ../) -->
     <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
     <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
     <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
     <link rel="manifest" href="../assets/favicon/site.webmanifest">
 
+    <!-- ОБЩИЕ CSS (выход в корень) -->
     <link rel="stylesheet" href="../css/variables.css">
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/header.css">
@@ -70,12 +71,12 @@
     <link rel="stylesheet" href="../css/buttons.css">
     <link rel="stylesheet" href="../css/responsive.css">
 
-    <!-- ЛОКАЛЬНЫЕ РЕСУРСЫ КАЛЬКУЛЯТОРА (относительно папки calculator/) -->
-    <link rel="stylesheet" href="css/character-cards-new.css">
-    <link rel="stylesheet" href="css/characters.css">
-    <link rel="stylesheet" href="css/dish-cards.css">
-    <link rel="stylesheet" href="css/tables.css">
-    <link rel="stylesheet" href="css/results.css">
+    <!-- ЛОКАЛЬНЫЕ CSS калькулятора (относительно текущей папки) -->
+    <link rel="stylesheet" href="calculator/css/character-cards-new.css">
+    <link rel="stylesheet" href="calculator/css/characters.css">
+    <link rel="stylesheet" href="calculator/css/dish-cards.css">
+    <link rel="stylesheet" href="calculator/css/tables.css">
+    <link rel="stylesheet" href="calculator/css/results.css">
 </head>
 
 <body>
@@ -225,7 +226,7 @@
         </div>
     </div>
 
-    <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ (выход на уровень вверх) -->
+    <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ (выход на уровень вверх через ../) -->
     <script src="../js/common_database/character-data.js"></script>
     <script src="../js/common/localization.js"></script>
     <script src="../js/common/app.js" type="module"></script>
@@ -233,6 +234,7 @@
     <script src="../js/common/sidebar.js"></script>
 
     <script>
+        // Логика внутренних табов
         document.querySelectorAll('.tab-inner').forEach(function (tab) {
             tab.addEventListener('click', function () {
                 document.querySelectorAll('.tab-inner').forEach(function (t) { t.classList.remove('active'); });
@@ -242,6 +244,7 @@
             });
         });
 
+        // Кнопка "Рассчитать"
         document.getElementById('btnRun').addEventListener('click', function () {
             document.querySelectorAll('.tab-inner').forEach(function (t) { t.classList.remove('active'); });
             document.querySelectorAll('.tab-content-inner').forEach(function (t) { t.classList.remove('active'); });
@@ -249,26 +252,36 @@
             document.getElementById('tab-optimizer').classList.add('active');
         });
 
+        // Переключение языка БЕЗ перезагрузки
         document.querySelectorAll('.lang-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 localStorage.setItem('lang', btn.dataset.lang);
                 document.querySelectorAll('.lang-btn').forEach(function (b) {
                     b.classList.toggle('active', b.dataset.lang === btn.dataset.lang);
                 });
-                if (window.applyTranslations) window.applyTranslations();
-                if (window.renderSidebar) window.renderSidebar();
+                if (window.applyTranslations) {
+                    window.applyTranslations();
+                }
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
                 window.dispatchEvent(new Event('langchange'));
             });
         });
 
+        // Применяем переводы ПОСЛЕ загрузки всех скриптов
         window.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 const currentLang = localStorage.getItem('lang') || 'ru';
                 document.querySelectorAll('.lang-btn').forEach(function (btn) {
                     btn.classList.toggle('active', btn.dataset.lang === currentLang);
                 });
-                if (window.applyTranslations) window.applyTranslations();
-                if (window.renderSidebar) window.renderSidebar();
+                if (window.applyTranslations) {
+                    window.applyTranslations();
+                }
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
             }, 100);
         });
     </script>
