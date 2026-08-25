@@ -1,3 +1,12 @@
+// ── ASSET PATH HELPER ──────────────────────────────────────────────────────
+export function getAssetPath(path) {
+    if (typeof window !== 'undefined' && window.getAssetPath) {
+        return window.getAssetPath(path);
+    }
+    // Fallback на случай вызова до инициализации window
+    return path ? path.replace(/^(\.\/|\.\.\/)+/, '') : path;
+}
+
 // ── UTILITIES ──────────────────────────────────────────────────────────────
 export function nCr(n, r) {
     if (r > n || r < 0) return 0;

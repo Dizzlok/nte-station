@@ -1,6 +1,6 @@
-import { getSettings, getUserState, saveUserState } from '../../js/common/state.js';
-import { getCombinations } from '../../js/common/utils.js';
+import { getUserState, saveUserState } from '../../js/common/state.js';
 import { t } from '../../js/common/i18n.js';
+import { getAssetPath } from '../../js/common/utils.js'; // <-- ДОБАВЛЕНО
 
 // ── CHARACTERS UI ──────────────────────────────────────────────────────────
 export function renderCharacters(masterData, TRANSLATIONS, CHARACTER_RANKS, updateRosterSummary) {
@@ -15,63 +15,49 @@ export function renderCharacters(masterData, TRANSLATIONS, CHARACTER_RANKS, upda
     if (ownedCountEl) ownedCountEl.textContent = ownedCount;
     if (totalCountEl) totalCountEl.textContent = masterData.characters.length;
 
+    const fallbackChar = getAssetPath('assets/images/common/not_found/not_found_char_256.webp');
+
     masterData.characters.forEach(c => {
         if (!userState.characters[c.name]) {
             userState.characters[c.name] = { owned: false, level: 1 };
         }
-
         const us = userState.characters[c.name];
         const isOwned = us.owned;
         const currentLevel = us.level || 1;
-
         const charRank = window.CHARACTER_RANKS[c.name] || { rank: 'A', element: 'order' };
         const rank = charRank.rank;
         const specialty = getCharacterSpecialty(c);
 
+        const portraitSrc = getAssetPath(`assets/images/common/characters/avatars/round/100/${c.name.toLowerCase().replace(/\s+/g, '_')}.webp`);
+        const rankSrc = getAssetPath(`assets/images/common/ranks/rank_${rank}.webp`);
+
         const card = document.createElement('div');
         card.className = `char-card-modern ${isOwned ? 'owned' : 'not-owned'}`;
         card.dataset.charName = c.name;
-
         card.innerHTML = `
             <div class="char-card-header-modern">
-                <img src="../assets/images/common/characters/avatars/round/100/${c.name.toLowerCase().replace(/\s+/g, '_')}.webp" 
-                     alt="${c.name}" 
-                     class="char-portrait"
-                     loading="lazy"
-                     onerror="if(this.src.indexOf('not_found_char')===-1)this.src='./assets/images/common/not_found/not_found_char_256.webp'">
-                
+                <img src="${portraitSrc}" alt="${c.name}" class="char-portrait" loading="lazy" onerror="if(this.src.indexOf('not_found_char')===-1) this.src='${fallbackChar}'">
                 <div class="char-info">
                     <div class="char-name-row">
                         <span class="char-name-modern">${t(c.name) || c.name}</span>
-                        <img src="../assets/images/common/ranks/rank_${rank}.webp" 
-                             alt="${rank}" 
-                             class="char-rank-img"
-                             loading="lazy"
-                             onerror="this.style.display='none'">
+                        <img src="${rankSrc}" alt="${rank}" class="char-rank-img" loading="lazy" onerror="this.style.display='none'">
                     </div>
                     <div class="char-specialty">${specialty}</div>
                 </div>
-                
                 <div class="char-ownership-badge ${isOwned ? 'owned' : 'not-owned'}"></div>
             </div>
-            
             <div class="char-card-body-modern">
                 <div class="char-skill-name">${getSkillName(c)}</div>
                 <div class="char-skill-desc">${getSkillDescription(c, currentLevel)}</div>
-                
                 <div class="char-level-selector">
                     ${[1, 2, 3, 4, 5].map(lvl => `
-                        <button class="char-level-btn ${lvl === currentLevel ? 'active' : ''}" 
-                                data-char-lvl="${c.name}" 
-                                data-level="${lvl}"
-                                ${!isOwned ? 'disabled' : ''}>
+                        <button class="char-level-btn ${lvl === currentLevel ? 'active' : ''}" data-char-lvl="${c.name}" data-level="${lvl}" ${!isOwned ? 'disabled' : ''}>
                             L${lvl}
                         </button>
                     `).join('')}
                 </div>
             </div>
         `;
-
         container.appendChild(card);
     });
 
@@ -122,7 +108,6 @@ function getSkillDescription(character, level) {
         else if (type === 'Traffic_Flat') desc = `+${Math.round(data.val)} ${t('to traffic') || 'к трафику'}`;
         else if (type === 'Traffic_Multiply') desc = `+${(data.val * 100).toFixed(1)}% ${t('to traffic') || 'к трафику'}`;
 
-        // Переводим тег навыка (Main Dishes → Основные блюда, Beverages → Напитки и т.д.)
         if (data.tag && data.tag !== 'None') {
             desc += ` (${t(data.tag) || data.tag})`;
         }
@@ -135,7 +120,6 @@ function setupCharacterEventListeners(masterData, userState, updateRosterSummary
     document.querySelectorAll('.char-card-modern').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('.char-level-btn') || e.target.closest('.char-level-selector')) return;
-
             const name = card.dataset.charName;
             if (!userState.characters[name]) {
                 userState.characters[name] = { owned: false, level: 1 };
