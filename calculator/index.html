@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Кафе "Ориген" - Оптимизатор</title>
+
+    <script>
+        (function () {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+            const currentLang = localStorage.getItem('lang') || 'ru';
+            document.documentElement.setAttribute('data-current-lang', currentLang);
+        })();
+    </script>
+
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
+
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/main-content.css">
+    <link rel="stylesheet" href="./css/panels.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./calculator/css/character-cards-new.css">
+    <link rel="stylesheet" href="./calculator/css/characters.css">
+    <link rel="stylesheet" href="./calculator/css/dish-cards.css">
+    <link rel="stylesheet" href="./calculator/css/tables.css">
+    <link rel="stylesheet" href="./calculator/css/results.css">
+</head>
+
+<body>
+    <div class="grain"></div>
+
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <img src="./assets/images/main/logo.webp" alt="Logo" class="logo-img">
+                <div class="logo-text">
+                    <div class="logo-title" data-ui="site_title">Кафе "Ориген"</div>
+                    <div class="logo-sub" data-ui="site_subtitle">ОПТИМИЗАТОР РОСТЕРА</div>
+                </div>
+            </div>
+            <div class="lang-switcher">
+                <button class="lang-btn" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <button class="toggle-btn" id="toggleBtn">‹</button>
+
+    <div id="sidebar-root"></div>
+
+    <div class="main-wrapper" id="mainWrapper">
+        <div class="content-area">
+            <div class="settings-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title" data-ui="settings_title">Настройки</div>
+                    </div>
+                    <div class="field-group">
+                        <label for="cafesOwned" data-ui="cafes_owned">Кафе в собственности</label>
+                        <select id="cafesOwned">
+                            <option value="1" data-ui="cafe_1">1 кафе</option>
+                            <option value="2" data-ui="cafe_2">2 кафе</option>
+                            <option value="3" data-ui="cafe_3">3 кафе</option>
+                            <option value="4" data-ui="cafe_4">4 кафе</option>
+                            <option value="5" selected data-ui="cafe_5">5 кафе</option>
+                        </select>
+                        <span class="field-hint" data-ui="cafes_hint">Макс. блюд и персонажей</span>
+                    </div>
+                    <div class="field-group">
+                        <label for="trendCategory" data-ui="trend_category">Текущий тренд</label>
+                        <select id="trendCategory">
+                            <option value="" data-ui="None">— Нет —</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="trendBonus" data-ui="trend_bonus">Бонус тренда (+Fons)</label>
+                        <select id="trendBonus">
+                            <option value="0.75" selected>+0.75</option>
+                            <option value="1.0">+1.0</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="popularityBonus" data-ui="popularity_bonus">Бонус популярности</label>
+                        <input type="number" id="popularityBonus" step="0.01" value="0">
+                        <span class="field-hint" data-ui="popularity_hint">Множитель дохода</span>
+                    </div>
+                    <div class="field-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="hotoriCatDecor"
+                                style="width: 16px; height: 16px; accent-color: var(--accent);">
+                            <span data-ui="hotori_decor">Декор: Кошка Хотори (+1% трафика)</span>
+                        </label>
+                    </div>
+                    <button class="btn-run" id="btnRun">
+                        <img src="./assets/images/calculator/calculate.svg" alt="" class="btn-run-icon">
+                        <span data-ui="btn_calculate">Рассчитать</span>
+                    </button>
+                    <div class="roster-summary" id="rosterSummary">
+                        <span data-ui="roster_dishes">Блюда</span>: <span>0</span> <span data-ui="roster_owned">в
+                            наличии</span> / <span>5</span> <span data-ui="roster_slots">слотов</span><br>
+                        <span data-ui="roster_characters">Персонажи</span>: <span>0</span> <span
+                            data-ui="roster_owned">в наличии</span> / <span>10</span> <span
+                            data-ui="roster_slots">слотов</span>
+                    </div>
+                    <div class="support-section">
+                        <p class="credits"><span class="credits-label" data-ui="logic_credit">Logic:</span> <a
+                                href="https://github.com/Kuro-121" target="_blank">Kuro-121</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-area">
+                <div class="panel">
+                    <div class="tabs-inner">
+                        <button class="tab-inner active" data-tab="optimizer"
+                            data-ui="tab_optimizer">Оптимизатор</button>
+                        <button class="tab-inner" data-tab="dishes" data-ui="tab_dishes">Блюда</button>
+                        <button class="tab-inner" data-tab="characters" data-ui="tab_characters">Персонажи</button>
+                    </div>
+
+                    <div id="tab-optimizer" class="tab-content-inner active">
+                        <div class="results-header">
+                            <div class="panel-title" data-ui="results_title">Результаты</div>
+                            <div class="panel-hint" data-ui="results_hint">Настройте параметры и запустите оптимизатор
+                            </div>
+                        </div>
+                        <div id="resultsArea">
+                            <div class="results-placeholder">
+                                <div class="placeholder-icon">☕</div>
+                                <p data-ui="placeholder_text">Настройте параметры и запустите оптимизатор, чтобы увидеть
+                                    лучший состав.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-dishes" class="tab-content-inner">
+                        <div class="dishes-header">
+                            <div class="panel-title">
+                                <img src="./assets/images/calculator/dishes.webp" alt="" class="panel-title-icon">
+                                <span data-ui="tab_dishes">Блюда</span>
+                            </div>
+                            <div class="bulk-actions">
+                                <button class="btn-bulk" id="btnToggleAllOwned" data-ui="Select All">Выбрать
+                                    все</button>
+                                <button class="btn-bulk" id="btnToggleAllLevel" data-ui="Set all L2">Установить все
+                                    L2</button>
+                            </div>
+                        </div>
+                        <div class="dishes-container" id="dishesContainer"></div>
+                    </div>
+
+                    <div id="tab-characters" class="tab-content-inner">
+                        <div class="characters-header">
+                            <div class="panel-title">
+                                <img src="./assets/images/calculator/characters.webp" alt="" class="panel-title-icon">
+                                <span data-ui="tab_characters">Персонажи</span>
+                            </div>
+                            <div class="char-stats">
+                                <span class="stat-badge">
+                                    <span class="stat-value" id="ownedCount">0</span>
+                                    <span class="stat-label" data-ui="roster_owned">в наличии</span>
+                                </span>
+                                <span class="stat-badge">
+                                    <span class="stat-value" id="totalCount">0</span>
+                                    <span class="stat-label" data-ui="total_count">всего</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="char-cards-grid" id="charCardsGrid"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../js/common_database/character-data.js"></script>
+    <script src="../js/common/localization.js"></script>
+    <script src="../js/common/app.js" type="module"></script>
+    <script src="../js/common/sidebar-render.js"></script>
+    <script src="../js/common/sidebar.js"></script>
+
+    <script>
+        // Логика внутренних табов
+        document.querySelectorAll('.tab-inner').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.tab-inner').forEach(function (t) { t.classList.remove('active'); });
+                document.querySelectorAll('.tab-content-inner').forEach(function (t) { t.classList.remove('active'); });
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Кнопка "Рассчитать"
+        document.getElementById('btnRun').addEventListener('click', function () {
+            document.querySelectorAll('.tab-inner').forEach(function (t) { t.classList.remove('active'); });
+            document.querySelectorAll('.tab-content-inner').forEach(function (t) { t.classList.remove('active'); });
+            document.querySelector('.tab-inner[data-tab="optimizer"]').classList.add('active');
+            document.getElementById('tab-optimizer').classList.add('active');
+        });
+
+        // Переключение языка БЕЗ перезагрузки
+        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                localStorage.setItem('lang', btn.dataset.lang);
+                // Обновляем активную кнопку
+                document.querySelectorAll('.lang-btn').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.lang === btn.dataset.lang);
+                });
+                // Мгновенно переводим все тексты на странице
+                if (window.applyTranslations) {
+                    window.applyTranslations();
+                }
+                // Перерисовываем сайдбар
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+                // Сообщаем app.js о смене языка (для блюд, персонажей, результатов)
+                window.dispatchEvent(new Event('langchange'));
+            });
+        });
+
+        // ВАЖНО: Применяем переводы ПОСЛЕ загрузки всех скриптов
+        window.addEventListener('DOMContentLoaded', function () {
+            // Ждём немного, чтобы все скрипты успели загрузиться
+            setTimeout(function () {
+                const currentLang = localStorage.getItem('lang') || 'ru';
+
+                // Подсвечиваем активную кнопку
+                document.querySelectorAll('.lang-btn').forEach(function (btn) {
+                    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+                });
+
+                // Применяем переводы ко всем элементам с data-ui
+                if (window.applyTranslations) {
+                    window.applyTranslations();
+                }
+
+                // Перерисовываем сайдбар
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+            }, 100);
+        });
+    </script>
+</body>
+
+</html>

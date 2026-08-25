@@ -1,0 +1,95 @@
+/* Основная обёртка калькулятора: две колонки */
+.main-wrapper {
+    margin-left: var(--main-margin-left, 292px);
+    padding: 2rem 3rem;
+    max-width: 100%;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-area {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* Левая колонка: панель настроек (фиксированная ширина) */
+.settings-panel {
+    position: sticky;
+    top: 96px;
+}
+
+/* Правая колонка: табы и контент (резиновая) */
+.right-area {
+    min-width: 0;
+}
+
+/* Внутренние табы (Оптимизатор / Блюда / Персонажи) */
+.tabs-inner {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-inner {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.tab-inner:hover {
+    color: var(--text);
+    background: var(--bg3);
+}
+
+.tab-inner.active {
+    background: var(--bg3);
+    color: var(--accent);
+}
+
+/* Контент внутренних табов */
+.tab-content-inner {
+    display: none;
+    animation: fadeIn 0.2s ease;
+}
+
+.tab-content-inner.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Заголовки внутри табов */
+.results-header,
+.dishes-header,
+.characters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.results-header .panel-title,
+.dishes-header .panel-title,
+.characters-header .panel-title {
+    margin-bottom: 0;
+}
