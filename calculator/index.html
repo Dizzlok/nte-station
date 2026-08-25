@@ -4,36 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NTE Station - Оптимизатор</title>
+    <base href="../">
+    <title>Кафе "Ориген" - Оптимизатор</title>
 
-    <!-- ДИНАМИЧЕСКИЙ BASE + ЗАЩИТА ОТ 404 -->
     <script>
         (function () {
             const hostname = window.location.hostname;
             const pathname = window.location.pathname;
-            let basePath = '/';
+            let basePath = '../';
 
+            // Определяем базу для GitHub Pages
             if (hostname.includes('github.io')) {
                 const match = pathname.match(/^\/([^\/]+)\//);
-                basePath = match ? '/' + match[1] + '/' : '/';
+                basePath = match ? '/' + match[1] + '/' : '../';
             } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                basePath = '/';
-            } else if (window.location.protocol === 'file:') {
-                basePath = './';
+                basePath = '../';
             }
 
-            // Глобальная переменная для JS-модулей
-            window.APP_BASE_PATH = basePath;
-
-            // Глобальная функция для безопасного формирования путей к ассетам
-            window.getAssetPath = function (path) {
-                if (!path) return path;
-                if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
-                // Убираем ведущие ./ или ../ чтобы избежать двойных слешей или неправильной вложенности
-                const cleanPath = path.replace(/^(\.\/|\.\.\/)+/, '');
-                return window.APP_BASE_PATH + cleanPath;
-            };
-
+            // Обновляем тег base
             let baseTag = document.querySelector('base');
             if (!baseTag) {
                 baseTag = document.createElement('base');
@@ -41,52 +29,45 @@
             }
             baseTag.href = basePath;
 
+            // Глобальная переменная для JS
+            window.APP_BASE_PATH = basePath;
+
+            // Глобальная функция для путей
+            window.getAssetPath = function (path) {
+                if (!path) return path;
+                if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
+                const cleanPath = path.replace(/^(\.\/|\.\.\/)+/, '');
+                return basePath + cleanPath;
+            };
+
+            // Сохраняем состояние сайдбара и языка
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
             const currentLang = localStorage.getItem('lang') || 'ru';
             document.documentElement.setAttribute('data-current-lang', currentLang);
-
-            // ИСПРАВЛЕНО: Обрабатываем ВСЕ ссылки, включая относительные
-            document.querySelectorAll('link[href], script[src], img[src], a[href], source[srcset]').forEach(el => {
-                const attr = el.hasAttribute('href') ? 'href' : (el.hasAttribute('src') ? 'src' : 'srcset');
-                const originalValue = el.getAttribute(attr);
-                if (!originalValue || originalValue.startsWith('http://') || originalValue.startsWith('https://') || originalValue.startsWith('data:') || originalValue.startsWith('#')) {
-                    return;
-                }
-
-                // Если путь уже абсолютный (начинается с /), добавляем basePath
-                if (originalValue.startsWith('/')) {
-                    el.setAttribute(attr, basePath + originalValue.substring(1));
-                }
-                // Если путь относительный (./ или ../), очищаем и добавляем basePath
-                else {
-                    const cleanPath = originalPath.replace(/^(\.\/|\.\.\/)+/, '');
-                    el.setAttribute(attr, basePath + cleanPath);
-                }
-            });
         })();
     </script>
 
-    <link rel="icon" type="image/x-icon" href="/assets/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
 
-    <link rel="stylesheet" href="/css/variables.css">
-    <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/main-content.css">
-    <link rel="stylesheet" href="/css/panels.css">
-    <link rel="stylesheet" href="/css/buttons.css">
-    <link rel="stylesheet" href="/css/responsive.css">
-    <link rel="stylesheet" href="/calculator/css/character-cards-new.css">
-    <link rel="stylesheet" href="/calculator/css/characters.css">
-    <link rel="stylesheet" href="/calculator/css/dish-cards.css">
-    <link rel="stylesheet" href="/calculator/css/tables.css">
-    <link rel="stylesheet" href="/calculator/css/results.css">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main-content.css">
+    <link rel="stylesheet" href="../css/panels.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="calculator/css/character-cards-new.css">
+    <link rel="stylesheet" href="calculator/css/characters.css">
+    <link rel="stylesheet" href="calculator/css/dish-cards.css">
+    <link rel="stylesheet" href="calculator/css/tables.css">
+    <link rel="stylesheet" href="calculator/css/results.css">
 </head>
 
 <body>
@@ -95,7 +76,7 @@
     <header>
         <div class="header-inner">
             <div class="logo">
-                <img src="/assets/images/main/logo.webp" alt="Logo" class="logo-img">
+                <img src="../assets/images/main/logo.webp" alt="Logo" class="logo-img">
                 <div class="logo-text">
                     <div class="logo-title" data-ui="site_title">Кафе "Ориген"</div>
                     <div class="logo-sub" data-ui="site_subtitle">ОПТИМИЗАТОР РОСТЕРА</div>
@@ -156,7 +137,7 @@
                         </label>
                     </div>
                     <button class="btn-run" id="btnRun">
-                        <img src="/assets/images/calculator/calculate.svg" alt="" class="btn-run-icon">
+                        <img src="../assets/images/calculator/calculate.svg" alt="" class="btn-run-icon">
                         <span data-ui="btn_calculate">Рассчитать</span>
                     </button>
                     <div class="roster-summary" id="rosterSummary">
@@ -200,7 +181,7 @@
                     <div id="tab-dishes" class="tab-content-inner">
                         <div class="dishes-header">
                             <div class="panel-title">
-                                <img src="/assets/images/calculator/dishes.webp" alt="" class="panel-title-icon">
+                                <img src="../assets/images/calculator/dishes.webp" alt="" class="panel-title-icon">
                                 <span data-ui="tab_dishes">Блюда</span>
                             </div>
                             <div class="bulk-actions">
@@ -216,7 +197,7 @@
                     <div id="tab-characters" class="tab-content-inner">
                         <div class="characters-header">
                             <div class="panel-title">
-                                <img src="/assets/images/calculator/characters.webp" alt="" class="panel-title-icon">
+                                <img src="../assets/images/calculator/characters.webp" alt="" class="panel-title-icon">
                                 <span data-ui="tab_characters">Персонажи</span>
                             </div>
                             <div class="char-stats">
@@ -238,14 +219,13 @@
         </div>
     </div>
 
-    <script src="/js/common_database/character-data.js"></script>
-    <script src="/js/common/localization.js"></script>
-    <script src="/js/common/app.js" type="module"></script>
-    <script src="/js/common/sidebar-render.js"></script>
-    <script src="/js/common/sidebar.js"></script>
+    <script src="../js/common_database/character-data.js"></script>
+    <script src="../js/common/localization.js"></script>
+    <script src="../js/common/app.js" type="module"></script>
+    <script src="../js/common/sidebar-render.js"></script>
+    <script src="../js/common/sidebar.js"></script>
 
     <script>
-        // Логика внутренних табов
         document.querySelectorAll('.tab-inner').forEach(function (tab) {
             tab.addEventListener('click', function () {
                 document.querySelectorAll('.tab-inner').forEach(function (t) { t.classList.remove('active'); });
@@ -255,7 +235,6 @@
             });
         });
 
-        // Кнопка "Рассчитать"
         document.getElementById('btnRun').addEventListener('click', function () {
             document.querySelectorAll('.tab-inner').forEach(function (t) { t.classList.remove('active'); });
             document.querySelectorAll('.tab-content-inner').forEach(function (t) { t.classList.remove('active'); });
@@ -263,7 +242,6 @@
             document.getElementById('tab-optimizer').classList.add('active');
         });
 
-        // Переключение языка БЕЗ перезагрузки
         document.querySelectorAll('.lang-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 localStorage.setItem('lang', btn.dataset.lang);
@@ -280,7 +258,6 @@
             });
         });
 
-        // Применяем переводы ПОСЛЕ загрузки всех скриптов
         window.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 const currentLang = localStorage.getItem('lang') || 'ru';
