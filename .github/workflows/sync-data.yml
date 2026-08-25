@@ -18,19 +18,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Скачать data.js из оригинального репозитория
+      - name: Скачать data.js в папку калькулятора
         run: |
-          curl -o data.js https://raw.githubusercontent.com/Kuro-121/NTE-CafeOptimizer/main/data.js
+          curl -o calculator/js/data.js https://raw.githubusercontent.com/Kuro-121/NTE-CafeOptimizer/main/data.js
 
       - name: Проверить изменения и закоммитить
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f data.js
+          git add -f calculator/js/data.js
           if ! git diff --staged --quiet; then
-            git commit -m "chore: auto-update data.js"
+            git commit -m "chore: auto-update data.js inside calculator/js"
             git push
-            echo "✅ data.js обновлен"
+            echo "✅ data.js успешно обновлен в calculator/js/"
           else
             echo "ℹ️ Изменений нет, файл актуален"
           fi
