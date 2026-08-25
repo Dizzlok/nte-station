@@ -6,24 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кафе "Ориген" - Оптимизатор</title>
 
-    <!-- ДИНАМИЧЕСКИЙ BASE: СТРОГО НА КОРЕНЬ (такой же, как в index.html) -->
+    <!-- ДИНАМИЧЕСКИЙ BASE: СТРОГО НА ПОДПАПКУ CALCULATOR -->
     <script>
         (function () {
             const hostname = window.location.hostname;
-            let basePath = '/';
+            let basePath = '/calculator/';
 
             if (hostname.includes('github.io')) {
                 const match = window.location.pathname.match(/^\/([^\/]+)\//);
-                basePath = match ? '/' + match[1] + '/' : '/';
+                basePath = match ? '/' + match[1] + '/calculator/' : '/calculator/';
             }
 
             window.basePath = basePath;
 
+            // Хелпер для динамических путей: гарантирует выход в корень для глобальных ассетов
             window.getAssetPath = function (path) {
                 if (!path) return path;
                 if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
-                const cleanPath = path.replace(/^(\.\/|\/)+/, '');
-                return basePath + cleanPath;
+                const cleanPath = path.replace(/^(\.\/|\.\.\/|\/)+/, '');
+                return basePath + '../' + cleanPath;
             };
 
             let baseTag = document.querySelector('base');
@@ -41,27 +42,27 @@
         })();
     </script>
 
-    <!-- ГЛОБАЛЬНЫЕ РЕСУРСЫ (от корня, без ./ и /) -->
-    <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="assets/favicon/site.webmanifest">
+    <!-- ГЛОБАЛЬНЫЕ РЕСУРСЫ (выход в корень через ../) -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="../assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../assets/favicon/site.webmanifest">
 
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/main-content.css">
-    <link rel="stylesheet" href="css/panels.css">
-    <link rel="stylesheet" href="css/buttons.css">
-    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main-content.css">
+    <link rel="stylesheet" href="../css/panels.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/responsive.css">
 
-    <!-- ЛОКАЛЬНЫЕ РЕСУРСЫ КАЛЬКУЛЯТОРА (явный префикс calculator/) -->
-    <link rel="stylesheet" href="calculator/css/character-cards-new.css">
-    <link rel="stylesheet" href="calculator/css/characters.css">
-    <link rel="stylesheet" href="calculator/css/dish-cards.css">
-    <link rel="stylesheet" href="calculator/css/tables.css">
-    <link rel="stylesheet" href="calculator/css/results.css">
+    <!-- ЛОКАЛЬНЫЕ РЕСУРСЫ КАЛЬКУЛЯТОРА (чистые относительные пути) -->
+    <link rel="stylesheet" href="css/character-cards-new.css">
+    <link rel="stylesheet" href="css/characters.css">
+    <link rel="stylesheet" href="css/dish-cards.css">
+    <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/results.css">
 </head>
 
 <body>
@@ -70,7 +71,7 @@
     <header>
         <div class="header-inner">
             <div class="logo">
-                <img src="assets/images/main/logo.webp" alt="Logo" class="logo-img">
+                <img src="../assets/images/main/logo.webp" alt="Logo" class="logo-img">
                 <div class="logo-text">
                     <div class="logo-title" data-ui="site_title">Кафе "Ориген"</div>
                     <div class="logo-sub" data-ui="site_subtitle">ОПТИМИЗАТОР РОСТЕРА</div>
@@ -130,7 +131,7 @@
                         </label>
                     </div>
                     <button class="btn-run" id="btnRun">
-                        <img src="assets/images/calculator/calculate.svg" alt="" class="btn-run-icon">
+                        <img src="../assets/images/calculator/calculate.svg" alt="" class="btn-run-icon">
                         <span data-ui="btn_calculate">Рассчитать</span>
                     </button>
                     <div class="roster-summary" id="rosterSummary">
@@ -174,7 +175,7 @@
                     <div id="tab-dishes" class="tab-content-inner">
                         <div class="dishes-header">
                             <div class="panel-title">
-                                <img src="assets/images/calculator/dishes.webp" alt="" class="panel-title-icon">
+                                <img src="../assets/images/calculator/dishes.webp" alt="" class="panel-title-icon">
                                 <span data-ui="tab_dishes">Блюда</span>
                             </div>
                             <div class="bulk-actions">
@@ -190,7 +191,7 @@
                     <div id="tab-characters" class="tab-content-inner">
                         <div class="characters-header">
                             <div class="panel-title">
-                                <img src="assets/images/calculator/characters.webp" alt="" class="panel-title-icon">
+                                <img src="../assets/images/calculator/characters.webp" alt="" class="panel-title-icon">
                                 <span data-ui="tab_characters">Персонажи</span>
                             </div>
                             <div class="char-stats">
@@ -211,12 +212,12 @@
         </div>
     </div>
 
-    <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ (от корня) -->
-    <script src="js/common_database/character-data.js"></script>
-    <script src="js/common/localization.js"></script>
-    <script src="js/common/app.js" type="module"></script>
-    <script src="js/common/sidebar-render.js"></script>
-    <script src="js/common/sidebar.js"></script>
+    <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ (выход в корень через ../) -->
+    <script src="../js/common_database/character-data.js"></script>
+    <script src="../js/common/localization.js"></script>
+    <script src="../js/common/app.js" type="module"></script>
+    <script src="../js/common/sidebar-render.js"></script>
+    <script src="../js/common/sidebar.js"></script>
 
     <script>
         document.querySelectorAll('.tab-inner').forEach(function (tab) {
