@@ -4,25 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="./">
     <title>Кафе "Ориген" - Главная</title>
 
-    <!-- ДИНАМИЧЕСКИЙ BASE ДЛЯ GITHUB PAGES -->
+    <!-- ДИНАМИЧЕСКИЙ BASE -->
     <script>
         (function () {
             const hostname = window.location.hostname;
-            const pathname = window.location.pathname;
-            let basePath = './';
+            let basePath = '/';
 
             if (hostname.includes('github.io')) {
-                const match = pathname.match(/^\/([^\/]+)\//);
-                if (match) {
-                    basePath = '/' + match[1] + '/';
-                }
-            } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                basePath = './';
+                const match = window.location.pathname.match(/^\/([^\/]+)\//);
+                basePath = match ? '/' + match[1] + '/' : '/';
             }
 
+            // Глобальная переменная
+            window.basePath = basePath;
+
+            // Функция для динамических путей
+            window.getAssetPath = function (path) {
+                if (!path) return path;
+                if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
+                return basePath + path.replace(/^(\.\/|\/)+/, '');
+            };
+
+            // Создаем/обновляем тег base
             let baseTag = document.querySelector('base');
             if (!baseTag) {
                 baseTag = document.createElement('base');
@@ -30,38 +35,30 @@
             }
             baseTag.href = basePath;
 
-            window.APP_BASE_PATH = basePath;
-
-            window.getAssetPath = function (path) {
-                if (!path) return path;
-                if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
-                const cleanPath = path.replace(/^(\.\/|\.\.\/)+/, '');
-                return basePath + cleanPath;
-            };
-
+            // Состояние
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
-            const currentLang = localStorage.getItem('lang') || 'ru';
-            document.documentElement.setAttribute('data-current-lang', currentLang);
+            document.documentElement.setAttribute('data-current-lang', localStorage.getItem('lang') || 'ru');
         })();
     </script>
 
-    <link rel="icon" type="image/x-icon" href="./assets/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="96x96" href="./assets/favicon/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="./assets/favicon/apple-touch-icon.png">
-    <link rel="manifest" href="./assets/favicon/site.webmanifest">
+    <!-- ВСЕ ПУТИ ОТНОСИТЕЛЬНЫЕ ОТ КОРНЯ -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="assets/favicon/site.webmanifest">
 
-    <link rel="stylesheet" href="./css/variables.css">
-    <link rel="stylesheet" href="./css/base.css">
-    <link rel="stylesheet" href="./css/header.css">
-    <link rel="stylesheet" href="./css/sidebar.css">
-    <link rel="stylesheet" href="./css/main-content.css">
-    <link rel="stylesheet" href="./css/panels.css">
-    <link rel="stylesheet" href="./css/buttons.css">
-    <link rel="stylesheet" href="./css/ad-sidebar.css">
-    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/main-content.css">
+    <link rel="stylesheet" href="css/panels.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/ad-sidebar.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 
 <body>
@@ -84,7 +81,6 @@
     </header>
 
     <button class="toggle-btn" id="toggleBtn">‹</button>
-
     <div id="sidebar-root"></div>
 
     <div class="main-wrapper" id="mainWrapper">
@@ -106,7 +102,7 @@
         <aside class="ad-sidebar">
             <div class="ad-title" data-ui="ad_title">Реклама</div>
             <div class="ad-placeholder">
-                <div class="ad-placeholder-icon"></div>
+                <div class="ad-placeholder-icon">📢</div>
                 <div data-ui="ad_size">300 × 600</div>
             </div>
         </aside>
@@ -120,29 +116,19 @@
         function applyTranslationsManual() {
             const lang = localStorage.getItem('lang') || 'ru';
             document.documentElement.setAttribute('data-current-lang', lang);
-
-            document.querySelectorAll('.lang-btn').forEach(function (btn) {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.lang === lang);
             });
-
             if (window.t) {
                 document.querySelectorAll('[data-ui]').forEach(el => {
-                    const key = el.getAttribute('data-ui');
-                    const translation = window.t(key);
-                    if (translation) {
-                        el.textContent = translation;
-                    }
+                    const translation = window.t(el.getAttribute('data-ui'));
+                    if (translation) el.textContent = translation;
                 });
             }
-
-            if (window.renderSidebar) {
-                window.renderSidebar();
-            }
+            if (window.renderSidebar) window.renderSidebar();
         }
-
         applyTranslationsManual();
-
-        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 localStorage.setItem('lang', btn.dataset.lang);
                 applyTranslationsManual();
